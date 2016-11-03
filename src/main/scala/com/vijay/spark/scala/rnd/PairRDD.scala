@@ -33,6 +33,15 @@ class PairRDD extends Serializable {
     val lines1 = pairRDD.reduceByKey((x, y) => x + y)
     lines1.foreach(println)
   }
+  
+   def foldByKey(){
+    //reduceByKey
+    println("-------------------------------\n FoldByKey Starting..")
+    //val lines = pairRDD.foldByKey(("") (_+ _))
+    val lines = pairRDD.map(x => (x._1, x._2))
+    lines.foldByKey(0)(_ + _).collect
+    lines.foreach(println)
+  }
   def groupByKey() {
     //groupByKey
     println("-------------------------------\n groupByKey Starting..")
@@ -104,7 +113,7 @@ class PairRDD extends Serializable {
   def coGroupfilerRDD() {
     println("-------------------------------\n Cogroup Filter Starting..")
     val lines11 = pairRDDSecond.cogroup(pairRDD)
-    lines11.foreach(println)
+  //  lines11.foreach(println)
     val r = lines11.filter { case (key, value) => key == "cat" }
     println(r.take(1))
 
