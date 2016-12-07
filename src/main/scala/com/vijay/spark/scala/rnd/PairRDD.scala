@@ -4,10 +4,10 @@ import org.apache.spark.SparkConf
 import org.apache.spark.api.java.JavaSparkContext
 import scala.Array
 
-class PairRDD extends Serializable {
-  val config = new SparkConf().setMaster("local").setAppName("PairRDD")
+class PairRDD(sc: JavaSparkContext) extends Serializable {
+  /*val config = new SparkConf().setMaster("local").setAppName("PairRDD")
   val sc = new JavaSparkContext(config)
-  sc.setLogLevel("FATAL")
+  sc.setLogLevel("FATAL")*/
   val pairRDD = sc.parallelize(List(("cat", 2), ("cat", 5), ("mouse", 4), ("cat", 12), ("dog", 12), ("mouse", 2)), 2)
   val pairRDDSecond = sc.parallelize(List(("cat", 2), ("donkey", 12), ("dog", 3), ("mouse", 1)), 2)
 
@@ -33,8 +33,8 @@ class PairRDD extends Serializable {
     val lines1 = pairRDD.reduceByKey((x, y) => x + y)
     lines1.foreach(println)
   }
-  
-   def foldByKey(){
+
+  def foldByKey() {
     //reduceByKey
     println("-------------------------------\n FoldByKey Starting..")
     //val lines = pairRDD.foldByKey(("") (_+ _))
@@ -113,10 +113,29 @@ class PairRDD extends Serializable {
   def coGroupfilerRDD() {
     println("-------------------------------\n Cogroup Filter Starting..")
     val lines11 = pairRDDSecond.cogroup(pairRDD)
-  //  lines11.foreach(println)
+    //  lines11.foreach(println)
     val r = lines11.filter { case (key, value) => key == "cat" }
     println(r.take(1))
 
   }
 
+  def perKeyAverage() {
+    println("-------------------------------\n Per-Key Average Starting..\n Raw Data... \n")
+    pairRDD.foreach(println)
+    println("-------------------------------\n")
+    val lines11 = pairRDD.mapValues(x => (x, 1)).reduceByKey((x, y) => (x._1 + y._1, x._2 + y._2))
+    lines11.foreach(println)
+  }
+
+  def perKeyAverageCombiner() {
+    println("-------------------------------\n Per-Key Average Combiner Starting..\n Raw Data... \n")
+    pairRDD.foreach(println)
+    println("-------------------------------\n")
+    val result = pairRDD.combineByKey(
+      (v) => (v, 1),
+      (acc: (Int, Int), v) => (acc._1 + v, acc._2 + 1),
+      (acc1: (Int, Int), acc2: (Int, Int)) => (acc1._1 + acc2._1, acc1._2 + acc2._2)).map { case (key, value) => (key, value._1 / value._2.toFloat) }
+
+    result.collectAsMap().foreach(println(_))
+  }
 }
