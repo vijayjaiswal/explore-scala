@@ -8,12 +8,14 @@ object RunDataPartitioning {
     println("Running Data Partitioning...")
 
     val config = new SparkConf().setMaster("local").setAppName("DataPartitioning")
-    config.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+    //config.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+    config.set("spark.serializer", "org.apache.spark.serializer.JavaSerializer")
     
     val sc = new JavaSparkContext(config)
     sc.setLogLevel("FATAL")
     val dataPartitioning = new DataPartitioning(sc)
     
    dataPartitioning.createUserFile
+    dataPartitioning.joinRDDs()
   }
 }
