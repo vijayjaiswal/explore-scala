@@ -13,7 +13,8 @@ import com.vijay.spark.scala.entity.Person
 
 class LoadJSON(sc: SparkContext) extends Serializable {
 
-  val jsonPath = "E:\\Projects\\RND\\scala-workspace\\scalarnd\\src\\main\\scala\\com\\vijay\\spark\\scala\\rnd\\customer.json"
+  //val jsonPath = "E:\\Projects\\RND\\scala-workspace\\scalarnd\\src\\main\\scala\\com\\vijay\\spark\\scala\\rnd\\customer.json"
+  val jsonPath = "E:\\Projects\\RND\\scala-workspace\\scalarnd\\src\\main\\scala\\com\\vijay\\spark\\scala\\rnd\\person.json"
   val outputFile = "E:\\Projects\\RND\\scala-workspace\\scalarnd\\src\\main\\scala\\com\\vijay\\spark\\scala\\rnd\\output"
   val input = sc.textFile(jsonPath)
   //val source: String = Source.fromFile(jsonPath).getLines.mkString
@@ -28,7 +29,9 @@ class LoadJSON(sc: SparkContext) extends Serializable {
 
       records.flatMap(record => {
         try {
-          Some(mapper.readValue(record, classOf[Customer]))
+          //Some(mapper.readValue(record, classOf[Customer]))
+          Some(mapper.readValue(record, classOf[Person]))
+
         } catch {
           case e: Exception => None
         }
